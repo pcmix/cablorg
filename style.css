@@ -1,0 +1,114 @@
+/*
+  =================================
+  1. Custom Styles
+  =================================
+  These are the custom styles that were in your <style> tag.
+  They work *with* the Tailwind CDN.
+*/
+
+/* --- Base Font --- */
+/* This was in your tailwind.config, it's now a base style */
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+/* --- Custom Cursor --- */
+body {
+    cursor: none;
+}
+a, button {
+    cursor: none;
+}
+
+#custom-cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #6366F1;
+    border-radius: 50%;
+    pointer-events: none;
+    transition: width 0.15s ease-out, height 0.15s ease-out, background-color 0.15s ease-out, opacity 0.15s ease-out;
+    z-index: 9999;
+    width: 12px;
+    height: 12px;
+}
+#custom-cursor.hover {
+    width: 40px;
+    height: 40px;
+    background-color: rgba(99, 102, 241, 0.2);
+}
+@media (max-width: 768px) {
+    body { cursor: auto; }
+    a, button { cursor: auto; }
+    #custom-cursor { display: none; }
+}
+
+/* --- Gradient Backgrounds --- */
+body {
+    /* Light Mode Gradient */
+    background-color: #f0f4ff; /* Fallback */
+    background-image: linear-gradient(180deg, #f0f4ff 0%, #ffffff 100%);
+    transition: background-image 0.3s ease;
+}
+html.dark body {
+    /* Dark Mode Gradient */
+    background-color: #111827; /* Fallback */
+    background-image: linear-gradient(180deg, #111827 0%, #221a3e 100%);
+}
+
+/* --- Background Z-Index Fix --- */
+#background-blobs {
+    z-index: -2;
+}
+#particle-canvas {
+    z-index: -1;
+}
+
+/*
+  =================================
+  2. Animations & Keyframes
+  =================================
+  This is the content that used to be in tailwind.config
+*/
+@keyframes hue-rotate {
+    '0%': { filter: 'hue-rotate(0deg)' },
+    '100%': { filter: 'hue-rotate(360deg)' },
+}
+@keyframes blob-1-anim {
+    '0%, 100%': { transform: 'translate(0, 0) scale(1)' },
+    '25%': { transform: 'translate(40vw, 10vh) scale(1.1)' },
+    '50%': { transform: 'translate(20vw, 40vh) scale(0.9)' },
+    '75%': { transform: 'translate(-10vw, 20vh) scale(1.2)' },
+}
+@keyframes blob-2-anim {
+    '0%, 100%': { transform: 'translate(0, 0) scale(1)' },
+    '25%': { transform: 'translate(-30vw, 15vh) scale(1.2)' },
+    '50%': { transform: 'translate(10vw, -20vh) scale(0.8)' },
+    '75%': { transform: 'translate(25vw, 25vh) scale(1.1)' },
+}
+@keyframes blob-3-anim {
+    '0%, 100%': { transform: 'translate(0, 0) scale(1)' },
+    '25%': { transform: 'translate(10vw, -10vh) scale(0.9)' },
+    '50%': { transform: 'translate(-20vw, -30vh) scale(1.1)' },
+    '75%': { transform: 'translate(30vw, 10vh) scale(1)' },
+}
+
+/* This special block tells Tailwind to add our
+  custom animations to its utility classes
+  (e.g., so 'animate-hue-rotate' works)
+*/
+@layer utilities {
+    .animate-hue-rotate {
+        animation: hue-rotate 10s linear infinite;
+    }
+    .animate-blob-1 {
+        animation: blob-1-anim 45s ease-in-out infinite;
+    }
+    .animate-blob-2 {
+        animation: blob-2-anim 50s ease-in-out infinite;
+    }
+    .animate-blob-3 {
+        animation: blob-3-anim 40s ease-in-out infinite;
+    }
+}
+

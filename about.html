@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - Cablorg</title>
+    
+    <!-- 
+      =================================
+      SHARED FILES
+      =================================
+    -->
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Your Custom Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- 
+      Theme Persistence Script
+      (Copied from index.html for no FOUC)
+    -->
+    <script>
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+    </script>
+</head>
+<body class="text-gray-900 dark:text-gray-100 transition-colors duration-300 font-sans">
+    
+    <!-- 
+      =================================
+      BACKGROUND ELEMENTS
+      =================================
+      (Copied from index.html)
+    -->
+    <div id="background-blobs" class="fixed top-0 left-0 w-full h-full overflow-hidden">
+        <div class="absolute top-1/4 left-1/4 w-72 h-72 md:w-96 md:h-96 bg-indigo-500 opacity-30 dark:opacity-20 rounded-full filter blur-3xl animate-blob-1"></div>
+        <div class="absolute top-1/2 left-1/2 w-72 h-72 md:w-96 md:h-96 bg-pink-500 opacity-30 dark:opacity-20 rounded-full filter blur-3xl animate-blob-2"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-72 h-72 md:w-96 md:h-96 bg-purple-500 opacity-30 dark:opacity-20 rounded-full filter blur-3xl animate-blob-3"></div>
+    </div>
+    <canvas id="particle-canvas" class="fixed top-0 left-0 w-full h-full"></canvas>
+    <div id="custom-cursor"></div>
+
+    <!-- 
+      =================================
+      HEADER PLACEHOLDER
+      =================================
+      Your main.js will load header.html here
+    -->
+    <div id="header-placeholder"></div>
+
+
+    <!-- 
+      =================================
+      MAIN CONTENT (ABOUT US)
+      =================================
+      REBUILT to match the layout from your screenshots
+    -->
+    <main class="relative z-10">
+
+        <!-- Section 1: Hero -->
+        <section class="container mx-auto px-6 pt-24 pb-16 md:pt-32 md:pb-24 text-center">
+            <h1 class="text-4xl md:text-6xl font-extrabold text-gray-900 dark:text-white mb-6 leading-tight">
+                <span class="animate-hue-rotate bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-transparent bg-clip-text">
+                    Engineered by Enthusiasts
+                </span>
+            </h1>
+            <p class="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                <!-- MODIFICATION: Added link, <strong> -->
+                Cablorg is a new design & engineering venture backed by <a href="https://pcmix.in" target="_blank" rel="noopener noreferrer" class="font-bold text-indigo-700 dark:text-indigo-300 hover:underline"><strong>PCMIX Computers</strong></a>, one of India's most trusted open-box hardware retailers. We aren't just a brand; we're a team of hardcore PC users building the products we've always wanted.
+            </p>
+        </section>
+
+        <!-- Section 2: Our Story -->
+        <section class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm py-20 md:py-24">
+            <div class="container mx-auto px-6 max-w-5xl">
+
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                        Our Story
+                    </h2>
+                    <p class="text-lg text-gray-600 dark:text-gray-400">
+                        This started from a simple, shared frustration.
+                    </p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 text-gray-700 dark:text-gray-300 text-lg leading-relaxed">
+                    
+                    <!-- The Cable Nightmare -->
+                    <div>
+                        <h3 class="text-2xl font-semibold text-gray-900 dark:text-white mb-3">
+                            The Cable Nightmare
+                        </h3>
+                        <p class="mb-4">As hardcore PC users, we've all been there. The rats' nest of cables hanging beneath the desk. The fear of touching a single wire, knowing it could unplug your entire setup. Even after hours of "cable management" with zip ties and tape, the result is often a rigid, messy block that you can never change or upgrade.</p>
+                        <p>We knew there had to be a better way. We started designing our own cable management solutions focused on one goal: to make the process effortless, minimal, and aesthetically pleasing.</p>
+                    </div>
+
+                    <!-- The Cluttered Desk -->
+                    <div>
+                        <h3 class="text-2xl font-semibold text-gray-900 dark:text-white mb-3">
+                            The Cluttered Desk
+                        </h3>
+                        <p class="mb-4">Our second frustration was the desktop itself. A premium pair of headphones. A pro-grade controller. All fighting for space, creating a constant mess.</p>
+                        <p>To solve this, we're developing a line of premium stands and organizational tools. More than just a simple "headphone stand," we're creating integrated "gadget stands" designed to elegantly hold and display your most-used peripherals in one minimal footprint.</p>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- Section 3: Our Process -->
+        <section class="py-20 md:py-24">
+            <div class="container mx-auto px-6 max-w-5xl">
+
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                        Our Process & The Future
+                    </h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 text-gray-700 dark:text-gray-300 text-lg leading-relaxed">
+                    
+                    <!-- The R&D Phase -->
+                    <div>
+                        <h3 class="text-2xl font-semibold text-gray-900 dark:text-white mb-3">
+                            The R&D Phase
+                        </h3>
+                        <!-- MODIFICATION: Added link, <strong> -->
+                        <p>We are perfectionists. That's why Cablorg is currently in an intensive research and development phase. All R&D is conducted in-house at our headquarters at <a href="https://pcmix.in" target="_blank" rel="noopener noreferrer" class="font-bold text-indigo-700 dark:text-indigo-300 hover:underline"><strong>PCMIX Computers</strong></a> in Nagpur, Maharashtra. We are meticulously iterating on every design, ensuring every product is durable, functional, and beautiful.</p>
+                    </div>
+
+                    <!-- Crafted with Precision -->
+                    <div>
+                        <h3 class="text-2xl font-semibold text-gray-900 dark:text-white mb-3">
+                            Crafted with Precision
+                        </h3>
+                        <p class="mb-4">To rapidly prototype and produce our first batches, we are leveraging high-end 3D printing technology. Our focus is on achieving a premium, high-quality finish that rivals traditional manufacturing. This allows us to perfect our designs with precision.</p>
+                        <p>After a successful launch, we plan to invest in industrial molds to bring our products to an even larger scale, while maintaining the quality we demand.</p>
+                    </div>
+                </div>
+
+                <!-- Target Launch -->
+                <div class="mt-16 text-center max-w-3xl mx-auto">
+                    <h3 class="text-2xl font-semibold text-gray-900 dark:text-white mb-3">
+                        Target Launch: Mid-2026
+                    </h3>
+                    <!-- MODIFICATION: Replaced ** with <strong> -->
+                    <p class="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+                        We will not rush. We plan to launch our first product lines by <strong class="font-bold text-indigo-700 dark:text-indigo-300">mid-2026</strong>, but only once we are 100% satisfied with their design and performance. Perfection is in the details, and we're committed to getting every detail right.
+                    </p>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 
+      =================================
+      FOOTER PLACEHOLDER
+      =================================
+      Your main.js will load footer.html here
+    -->
+    <div id="footer-placeholder"></div>
+
+    <!-- 
+      =================================
+      SHARED SCRIPT
+      =================================
+      This loads all your shared JS (menu, cursor, particles, etc.)
+    -->
+    <script src="main.js"></script>
+
+</body>
+</html>
+

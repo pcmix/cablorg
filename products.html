@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products - Cablorg</title>
+    
+    <!-- 
+      =================================
+      SHARED FILES
+      =================================
+    -->
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Your Custom Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- 
+      Theme Persistence Script
+      (Copied from index.html for no FOUC)
+    -->
+    <script>
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+    </script>
+</head>
+<body class="text-gray-900 dark:text-gray-100 transition-colors duration-300 font-sans">
+    
+    <!-- 
+      =================================
+      BACKGROUND ELEMENTS
+      =================================
+      (Copied from index.html)
+    -->
+    <div id="background-blobs" class="fixed top-0 left-0 w-full h-full overflow-hidden">
+        <div class="absolute top-1/4 left-1/4 w-72 h-72 md:w-96 md:h-96 bg-indigo-500 opacity-30 dark:opacity-20 rounded-full filter blur-3xl animate-blob-1"></div>
+        <div class="absolute top-1/2 left-1/2 w-72 h-72 md:w-96 md:h-96 bg-pink-500 opacity-30 dark:opacity-20 rounded-full filter blur-3xl animate-blob-2"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-72 h-72 md:w-96 md:h-96 bg-purple-500 opacity-30 dark:opacity-20 rounded-full filter blur-3xl animate-blob-3"></div>
+    </div>
+    <canvas id="particle-canvas" class="fixed top-0 left-0 w-full h-full"></canvas>
+    <div id="custom-cursor"></div>
+
+    <!-- 
+      =================================
+      HEADER PLACEHOLDER
+      =================================
+      Your main.js will load header.html here
+    -->
+    <div id="header-placeholder"></div>
+
+
+    <!-- 
+      =================================
+      MAIN CONTENT (PRODUCTS)
+      =================================
+    -->
+    <main class="relative z-10">
+
+        <!-- Section 1: Hero -->
+        <section class="container mx-auto px-6 pt-24 pb-16 md:pt-32 md:pb-24 text-center">
+            <h1 class="text-4xl md:text-6xl font-extrabold text-gray-900 dark:text-white mb-6 leading-tight">
+                <span class="animate-hue-rotate bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-transparent bg-clip-text">
+                    Engineered for Enthusiasts
+                </span>
+            </h1>
+            <p class="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                A preview of our in-house designed, precision 3D-printed product lines. Currently in R&D to meet our exacting standards.
+            </p>
+        </section>
+
+        <!-- Section 2: Product Details -->
+        <section class="container mx-auto px-6 pb-24 md:pb-32 max-w-6xl">
+            
+            <!-- Product Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-1 gap-12">
+
+                <!-- Product 1: Cable Management -->
+                <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden flex flex-col md:flex-row">
+                    <!-- Icon / Image Placeholder -->
+                    <div class="flex-shrink-0 p-8 md:p-12 flex items-center justify-center md:w-1/3 bg-gray-50 dark:bg-gray-900/50">
+                        <svg class="w-24 h-24 text-indigo-600 dark:text-indigo-400 animate-hue-rotate" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    </div>
+                    <!-- Content -->
+                    <div class="p-8 md:p-12 flex-grow">
+                        <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                            Advanced Cable Management
+                        </h2>
+                        <p class="text-lg text-gray-700 dark:text-gray-300 mb-4">
+                            We're engineering a complete ecosystem of cable management solutions. This isn't just about hiding cables; it's about simplifying the process. Our in-house designs focus on effortless, one-time installation that makes managing your setup a pleasure, not a chore.
+                        </p>
+                        <ul class="list-disc list-inside space-y-2 text-gray-600 dark:text-gray-400">
+                            <li>Intuitive, tool-free installation.</li>
+                            <li>Modular designs that grow with your setup.</li>
+                            <li>Aesthetic, minimal, and repeatable results every time.</li>
+                            <li>High-durability, precision 3D-printed materials.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Product 2: Gaming Gear Holders -->
+                <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden flex flex-col md:flex-row">
+                    <!-- Icon / Image Placeholder -->
+                    <div class="flex-shrink-0 p-8 md:p-12 flex items-center justify-center md:w-1/3 bg-gray-50 dark:bg-gray-900/50">
+                        <svg class="w-24 h-24 text-purple-600 dark:text-purple-400 animate-hue-rotate" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>
+                    </div>
+                    <!-- Content -->
+                    <div class="p-8 md:p-12 flex-grow">
+                        <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                            Gaming Gear Holders
+                        </h2>
+                        <p class="text-lg text-gray-700 dark:text-gray-300 mb-4">
+                            A messy desk kills the vibe. We are designing a range of premium holders to organize your most important gear. More than just a stand, these are elegant, stable, and space-saving solutions to display your headphones, controllers, and other accessories in one dedicated place.
+                        </p>
+                        <ul class="list-disc list-inside space-y-2 text-gray-600 dark:text-gray-400">
+                            <li>Multi-functional designs for controllers and headphones.</li>
+                            <li>Weighted, non-slip bases for stability.</li>
+                            <li>Unique, 3D-printed geometric forms.</li>
+                            <li>Designed to complement a high-end desk setup.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Product 3: PC Aesthetic Mods -->
+                <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden flex flex-col md:flex-row">
+                    <!-- Icon / Image Placeholder -->
+                    <div class="flex-shrink-0 p-8 md:p-12 flex items-center justify-center md:w-1/3 bg-gray-50 dark:bg-gray-900/50">
+                        <svg class="w-24 h-24 text-pink-600 dark:text-pink-400 animate-hue-rotate" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707.707M12 21v-1m0 0a9 9 0 100-18 9 9 0 000 18z"></path></svg>
+                    </div>
+                    <!-- Content -->
+                    <div class="p-8 md:p-12 flex-grow">
+                        <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                            PC Looks Enhancing Mods
+                        </h2>
+                        <p class="text-lg text-gray-700 dark:text-gray-300 mb-4">
+                            For the enthusiast who sees their PC as a centerpiece. We are developing a line of subtle, high-impact aesthetic modifications. From diffused RGB elements to custom component covers, these mods are designed in-house to add a final layer of polish and personality to your build.
+                        </p>
+                        <ul class="list-disc list-inside space-y-2 text-gray-600 dark:text-gray-400">
+                            <li>Bespoke designs for popular cases and components.</li>
+                            <li>Advanced 3D-printing techniques for flawless finishes.</li>
+                            <li>Focus on light diffusion and subtle custom branding.</li>
+                            <li>Easy, non-permanent installation.</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 
+      =================================
+      FOOTER PLACEHOLDER
+      =================================
+      Your main.js will load footer.html here
+    -->
+    <div id="footer-placeholder"></div>
+
+    <!-- 
+      =================================
+      SHARED SCRIPT
+      =================================
+      This loads all your shared JS (menu, cursor, particles, etc.)
+    -->
+    <script src="main.js"></script>
+
+</body>
+</html>
