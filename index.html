@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cablorg - Engineering PC Aesthetics</title>
+    
+    <!-- 
+      Tailwind CSS CDN
+      This script pulls in the Tailwind CSS utility classes.
+    -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- 
+      Theme Persistence Script
+      This script MUST run in the <head> before the <body> renders to 
+      prevent the "flash" of the wrong theme.
+    -->
+    <script>
+        // On page load or when changing themes, best to add inline in `head` to avoid FOUC
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+    </script>
+
+    <!-- 
+      Font (Inter)
+      Adding the Inter font family for a clean, modern look.
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- 
+      Tailwind Configuration
+      Extending the default theme to use "Inter" as the primary font.
+    -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+            },
+          }
+        },
+        darkMode: 'class' // This enables the 'dark:' variants based on the class on the <html> tag
+      }
+    </script>
+
+    <!-- 
+      =================================
+      NEW: Custom Styles for RGB & Cursor
+      =================================
+    -->
+    <style>
+        /* Custom RGB Animation
+          This creates a 10-second hue rotation animation.
+        */
+        @keyframes hue-rotate {
+          0% {
+            filter: hue-rotate(0deg);
+          }
+          100% {
+            filter: hue-rotate(360deg);
+          }
+        }
+        .animate-hue-rotate {
+          animation: hue-rotate 10s linear infinite;
+        }
+
+        /* Custom Cursor Styles
+        */
+        /* Hide the default browser cursor */
+        body {
+            cursor: none;
+        }
+        
+        #custom-cursor {
+            position: fixed;
+            /* NEW: Added top: 0 and left: 0 */
+            top: 0;
+            left: 0;
+            /* Use an indigo color that works on light/dark */
+            background-color: #6366F1; /* CHANGED: Was 'border: 2px solid #6366F1;' */
+            border-radius: 50%;
+            pointer-events: none; /* Allows clicks to pass through */
+            /* REMOVED: transform: translate(-50%, -50%); - JS will handle this */
+            /* CHANGED: Added opacity and background-color to the transition */
+            transition: width 0.15s ease-out, height 0.15s ease-out, background-color 0.15s ease-out, opacity 0.15s ease-out;
+            z-index: 9999;
+            width: 12px;
+            height: 12px;
+        }
+
+        /* Hover effect for the custom cursor */
+        #custom-cursor.hover {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(99, 102, 241, 0.2); /* Semi-transparent indigo */
+        }
+        
+        /* On mobile, revert to the default cursor */
+        @media (max-width: 768px) {
+            body {
+                cursor: auto;
+            }
+            #custom-cursor {
+                display: none;
+            }
+        }
+    </style>
+
+</head>
+<body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300 font-sans">
+    
+    <!-- 
+      =================================
+      NEW: Particle Canvas Background
+      =================================
+      This canvas will sit behind all other content.
+      z-[-1] is a Tailwind utility for z-index: -1.
+    -->
+    <canvas id="particle-canvas" class="fixed top-0 left-0 w-full h-full z-[-1]"></canvas>
+
+    <!-- 
+      =================================
+      Header & Navigation
+      =================================
+    -->
+    <header class="border-b border-gray-200 dark:border-gray-800 sticky top-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm z-50">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            
+            <!-- Brand Name (MODIFIED for RGB) -->
+            <div class="text-2xl font-bold">
+                <!-- This span applies the gradient and hue-rotate animation -->
+                <span class="animate-hue-rotate bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-transparent bg-clip-text">
+                    Cablorg
+                </span>
+            </div>
+            
+            <!-- Navigation Links & Theme Toggle -->
+            <div class="flex items-center space-x-6">
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition rounded-md px-2 py-1">Home</a>
+                    <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition rounded-md px-2 py-1">Products</a>
+                    <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition rounded-md px-2 py-1">About Us</a>
+                    <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition rounded-md px-2 py-1">Contact</a>
+                </div>
+                
+                <!-- Theme Toggle Button -->
+                <button id="theme-toggle" type="button" class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5">
+                    <!-- Light Mode Icon (Sun) -->
+                    <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.707.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-1.636 4.95l1.414 1.414a1 1 0 01-1.414 1.414l-1.414-1.414a1 1 0 011.414-1.414zM3 11a1 1 0 100-2H2a1 1 0 100 2h1zM4.95 6.364a1 1 0 00-1.414-1.414L2.12 6.364a1 1 0 101.414 1.414l1.414-1.414zM1.636 14.95l1.414-1.414a1 1 0 111.414 1.414l-1.414 1.414a1 1 0 01-1.414-1.414zM10 16a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+                    <!-- Dark Mode Icon (Moon) -->
+                    <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                </button>
+                
+                <!-- Mobile Menu Button (Placeholder) -->
+                <button class="md:hidden text-gray-600 dark:text-gray-300 p-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- 
+      =================================
+      Main Content
+      =================================
+    -->
+    <main>
+
+        <!-- 
+          =================================
+          Hero Section
+          =================================
+        -->
+        <section class="container mx-auto px-6 py-24 md:py-32 text-center relative z-10">
+            <!-- MODIFIED Hero Headline for RGB -->
+            <h1 class="text-4xl md:text-6xl font-extrabold text-gray-900 dark:text-white mb-6 leading-tight">
+                <span class="animate-hue-rotate bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-transparent bg-clip-text">
+                    Engineering Your PC's Aesthetics
+                </span>
+            </h1>
+            <p class="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                Cablorg is currently in an intensive R&D phase, meticulously engineering a new line of premium PC modding and aesthetic accessories. We aren't rushing; we are perfecting.
+            </p>
+            <div class="mt-10">
+                <span class="inline-block bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 font-semibold px-6 py-3 rounded-full text-sm uppercase tracking-wider">
+                    A New Standard is Coming Soon
+                </span>
+            </div>
+        </section>
+
+        <!-- 
+          =================================
+          Product Categories Section
+          =================================
+        -->
+        <section class="bg-gray-50 dark:bg-gray-800 py-20 md:py-24 relative z-10">
+            <div class="container mx-auto px-6">
+                
+                <!-- Section Header -->
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                        A Glimpse of What's to Come
+                    </h2>
+                    <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+                        Our initial product lines, engineered from the ground up for modders, enthusiasts, and perfectionists.
+                    </p>
+                </div>
+                
+                <!-- Product Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    
+                    <!-- Card 1: Cable Management -->
+                    <div class="bg-white dark:bg-gray-700 p-8 rounded-lg shadow-lg text-center transform transition-transform duration-300 hover:scale-105">
+                        <!-- Icon (MODIFIED for RGB) -->
+                        <div class="flex justify-center items-center mb-6 w-16 h-16 bg-indigo-100 dark:bg-indigo-900 rounded-full mx-auto animate-hue-rotate">
+                            <svg class="w-8 h-8 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        </div>
+                        <h3 class="text-2xl font-semibold text-gray-900 dark:text-white mb-3">
+                            Advanced Cable Management
+                        </h3>
+                        <p class="text-gray-600 dark:text-gray-300">
+                            Clean, efficient, and beautiful. Solutions designed to make your build spotless and simple.
+                        </p>
+                    </div>
+                    
+                    <!-- Card 2: Headphone Stands -->
+                    <div class="bg-white dark:bg-gray-700 p-8 rounded-lg shadow-lg text-center transform transition-transform duration-300 hover:scale-105">
+                        <!-- Icon (MODIFIED for RGB) -->
+                        <div class="flex justify-center items-center mb-6 w-16 h-16 bg-indigo-100 dark:bg-indigo-900 rounded-full mx-auto animate-hue-rotate">
+                            <svg class="w-8 h-8 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>
+                        </div>
+                        <h3 class="text-2xl font-semibold text-gray-900 dark:text-white mb-3">
+                            Premium Headphone Stands
+                        </h3>
+                        <p class="text-gray-600 dark:text-gray-300">
+                            Elegant, sturdy, and minimalist. The perfect showcase for your high-end audio gear.
+                        </p>
+                    </div>
+                    
+                    <!-- Card 3: Aesthetic PC Mods -->
+                    <div class="bg-white dark:bg-gray-700 p-8 rounded-lg shadow-lg text-center transform transition-transform duration-300 hover:scale-105">
+                        <!-- Icon (MODIFIED for RGB) -->
+                        <div class="flex justify-center items-center mb-6 w-16 h-16 bg-indigo-100 dark:bg-indigo-900 rounded-full mx-auto animate-hue-rotate">
+                            <svg class="w-8 h-8 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707.707M12 21v-1m0 0a9 9 0 100-18 9 9 0 000 18z"></path></svg>
+                        </div>
+                        <h3 class="text-2xl font-semibold text-gray-900 dark:text-white mb-3">
+                            Aesthetic PC Mods
+                        </h3>
+                        <p class="text-gray-600 dark:text-gray-300">
+                            From subtle RGB enhancements to bespoke components, elevate your PC from a tool to a centerpiece.
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 
+      =================================
+      Footer
+      =================================
+    -->
+    <footer class="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 py-16 relative z-10">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                
+                <!-- Column 1: Brand & Copyright -->
+                <div>
+                    <!-- MODIFIED Brand Name for RGB -->
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                        <span class="animate-hue-rotate bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-transparent bg-clip-text">
+                            Cablorg
+                        </span>
+                    </h3>
+                    <p class="mb-4">Perfection is in the details.</p>
+                    <p class="text-sm">&copy; 2025 Cablorg. All rights reserved.</p>
+                </div>
+                
+                <!-- Column 2: Legal Links -->
+                <div>
+                    <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Company</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-gray-900 dark:hover:text-white transition rounded-md -ml-2 px-2 py-1">About Us</a></li>
+                        <li><a href="#" class="hover:text-gray-900 dark:hover:text-white transition rounded-md -ml-2 px-2 py-1">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-gray-900 dark:hover:text-white transition rounded-md -ml-2 px-2 py-1">Terms & Conditions</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Column 3: Social Media -->
+                <div>
+                    <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Follow Us</h4>
+                    <p class="mb-4">Get updates on our R&D progress and launch.</p>
+                    <div class="flex space-x-4">
+                        <!-- YouTube -->
+                        <a href="#" aria-label="YouTube" class="text-gray-500 hover:text-red-600 dark:hover:text-red-500 transition p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M19.812 5.418c.861.23 1.538.907 1.768 1.768C21.998 8.78 22 12 22 12s0 3.22-.418 4.814a2.506 2.506 0 0 1-1.768 1.768c-1.594.418-7.812.418-7.812.418s-6.218 0-7.812-.418a2.506 2.506 0 0 1-1.768-1.768C2.002 15.22 2 12 2 12s0-3.22.418-4.814a2.506 2.506 0 0 1 1.768-1.768C5.782 5 12 5 12 5s6.218 0 7.812.418ZM9.75 15.25V8.75l5.469 3.25-5.469 3.25Z" clip-rule="evenodd" /></svg>
+                        </a>
+                        <!-- Instagram -->
+                        <a href="#" aria-label="Instagram" class="text-gray-500 hover:text-pink-600 dark:hover:text-pink-500 transition p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 0 1 1.772 1.153 4.902 4.902 0 0 1 1.153 1.772c.247.636.416 1.363.465 2.427.048 1.024.06 1.378.06 3.808s-.012 2.784-.06 3.808c-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 0 1-1.153 1.772 4.902 4.902 0 0 1-1.772 1.153c-.636.247-1.363.416-2.427.465-1.024.048-1.378.06-3.808.06s-2.784-.012-3.808-.06c-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 0 1-1.772-1.153 4.902 4.902 0 0 1-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.048-1.024-.06-1.378-.06-3.808s.012-2.784.06-3.808c.049-1.064.218 1.791.465-2.427a4.902 4.902 0 0 1 1.153-1.772A4.902 4.902 0 0 1 5.465 2.525c.636-.247 1.363-.416 2.427-.465C8.93 2.013 9.284 2 12.315 2zM12 7.043c-2.748 0-4.969 2.222-4.969 4.969s2.221 4.969 4.969 4.969 4.969-2.222 4.969-4.969S14.748 7.043 12 7.043zm0 8.217c-1.79 0-3.248-1.458-3.248-3.248s1.458-3.248 3.248-3.248 3.248 1.458 3.248 3.248-1.458 3.248-3.248 3.248zM16.48 5.163c-.808 0-1.46.652-1.46 1.46s.652 1.46 1.46 1.46 1.46-.652 1.46-1.46-.652-1.46-1.46-1.46z" clip-rule="evenodd" /></svg>
+                        </a>
+                        <!-- Facebook -->
+                        <a href="#" aria-label="Facebook" class="text-gray-500 hover:text-blue-600 dark:hover:text-blue-500 transition p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12Z" clip-rule="evenodd" /></svg>
+                        </a>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </footer>
+
+    <!-- 
+      =================================
+      NEW: Custom Cursor HTML Element
+      =================================
+    -->
+    <div id="custom-cursor"></div>
+
+
+    <!-- 
+      =================================
+      JavaScript for Theme Toggle Logic
+      =================================
+      (This is the original script from the previous version)
+    -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+            const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+
+            // Function to set the icon state based on the current theme
+            function setIconState() {
+                if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    themeToggleLightIcon.classList.remove('hidden');
+                    themeToggleDarkIcon.classList.add('hidden');
+                } else {
+                    themeToggleDarkIcon.classList.remove('hidden');
+                    themeToggleLightIcon.classList.add('hidden');
+                }
+            }
+
+            // Set the initial state of the icons
+            setIconState();
+
+            // Add click listener to the toggle button
+            themeToggleBtn.addEventListener('click', () => {
+                
+                // Toggle the 'dark' class on the <html> element
+                document.documentElement.classList.toggle('dark');
+
+                // Update localStorage
+                if (document.documentElement.classList.contains('dark')) {
+                    localStorage.theme = 'dark';
+                } else {
+                    localStorage.theme = 'light';
+                }
+                
+                // Update the icon visibility
+                setIconState();
+            });
+
+        });
+    </script>
+
+    <!-- 
+      =================================
+      NEW: Particle & Cursor JS
+      =================================
+    -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- Custom Cursor Logic ---
+            const cursor = document.getElementById('custom-cursor');
+            
+            // Update cursor position
+            window.addEventListener('mousemove', (e) => {
+                // Use transform for smooth performance
+                /* MODIFIED: This JS transform now correctly moves AND centers the element */
+                cursor.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -50%)`;
+            });
+
+            // Add hover effect
+            document.querySelectorAll('a, button').forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    cursor.classList.add('hover');
+                });
+                el.addEventListener('mouseleave', () => {
+                    cursor.classList.remove('hover');
+                });
+            });
+
+
+            // --- Particle Canvas Logic ---
+            const canvas = document.getElementById('particle-canvas');
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            let mouse = { x: undefined, y: undefined };
+
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            // Update mouse position
+            window.addEventListener('mousemove', (e) => {
+                mouse.x = e.clientX;
+                mouse.y = e.clientY;
+            });
+            window.addEventListener('mouseout', () => {
+                mouse.x = undefined;
+                mouse.y = undefined;
+            });
+
+            // Particle Class
+            class Particle {
+                constructor(x, y, radius, velocity, hue) {
+                    this.x = x;
+                    this.y = y;
+                    this.radius = radius;
+                    this.velocity = velocity;
+                    this.hue = hue;
+                }
+
+                draw() {
+                    // Check theme for particle lightness
+                    const isDark = document.documentElement.classList.contains('dark');
+                    const lightness = isDark ? '70%' : '50%';
+                    
+                    ctx.fillStyle = `hsl(${this.hue}, 100%, ${lightness})`;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                update() {
+                    // Update hue for RGB cycle
+                    this.hue += 0.5;
+                    if (this.hue > 360) this.hue = 0;
+
+                    // Move particle
+                    this.x += this.velocity.x;
+                    this.y += this.velocity.y;
+
+                    // Bounce off walls
+                    if (this.x - this.radius < 0 || this.x + this.radius > canvas.width) {
+                        this.velocity.x = -this.velocity.x;
+                    }
+                    if (this.y - this.radius < 0 || this.y + this.radius > canvas.height) {
+                        this.velocity.y = -this.velocity.y;
+                    }
+                    
+                    this.draw();
+                }
+            }
+
+            // Create particles
+            function initParticles() {
+                particles = [];
+                let particleCount = window.innerWidth < 768 ? 40 : 80; // Fewer particles on mobile
+                for (let i = 0; i < particleCount; i++) {
+                    let radius = Math.random() * 1.5 + 1;
+                    let x = Math.random() * (canvas.width - radius * 2) + radius;
+                    let y = Math.random() * (canvas.height - radius * 2) + radius;
+                    let velocity = {
+                        x: (Math.random() - 0.5) * 0.5,
+                        y: (Math.random() - 0.5) * 0.5
+                    };
+                    let hue = Math.random() * 360;
+                    particles.push(new Particle(x, y, radius, velocity, hue));
+                }
+            }
+
+            // Connect particles
+            function connectParticles() {
+                const maxDist = 120;
+                const isDark = document.documentElement.classList.contains('dark');
+                const lineLightness = isDark ? '60%' : '40%';
+
+                for (let a = 0; a < particles.length; a++) {
+                    // Check distance to other particles
+                    for (let b = a + 1; b < particles.length; b++) {
+                        let dx = particles[a].x - particles[b].x;
+                        let dy = particles[a].y - particles[b].y;
+                        let dist = Math.sqrt(dx * dx + dy * dy);
+
+                        if (dist < maxDist) {
+                            let opacity = 1 - (dist / maxDist);
+                            ctx.strokeStyle = `hsla(${particles[a].hue}, 100%, ${lineLightness}, ${opacity})`;
+                            ctx.lineWidth = 0.5;
+                            ctx.beginPath();
+                            ctx.moveTo(particles[a].x, particles[a].y);
+                            ctx.lineTo(particles[b].x, particles[b].y);
+                            ctx.stroke();
+                        }
+                    }
+
+                    // Check distance to mouse
+                    if (mouse.x !== undefined && mouse.y !== undefined) {
+                        let dx = particles[a].x - mouse.x;
+                        let dy = particles[a].y - mouse.y;
+                        let dist = Math.sqrt(dx * dx + dy * dy);
+
+                        if (dist < maxDist * 1.5) { // Larger interaction radius for mouse
+                            let opacity = 1 - (dist / (maxDist * 1.5));
+                            ctx.strokeStyle = `hsla(${particles[a].hue}, 100%, ${lineLightness}, ${opacity})`;
+                            ctx.lineWidth = 1;
+                            ctx.beginPath();
+                            ctx.moveTo(particles[a].x, particles[a].y);
+                            ctx.lineTo(mouse.x, mouse.y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+
+            // Animation Loop
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => p.update());
+                connectParticles();
+                requestAnimationFrame(animate);
+            }
+
+            initParticles();
+            animate();
+
+            // Re-init particles on resize to adjust count and position
+            let resizeTimer;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(() => {
+                    resizeCanvas();
+                    initParticles();
+                }, 250);
+            });
+            
+        });
+    </script>
+</body>
+</html>
+
+
+
